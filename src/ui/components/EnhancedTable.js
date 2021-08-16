@@ -48,10 +48,7 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  {
-    id: "name",
-    label: "Name",
-  },
+  { id: "name", label: "Name" },
   { id: "date", label: "Date" },
   { id: "service", label: "Service" },
   { id: "features", label: "Features" },
@@ -319,12 +316,12 @@ export default function EnhancedTable(props) {
                       >
                         {row.name}
                       </TableCell>
-                      <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">{row.date}</TableCell>
                       <TableCell align="center">{row.service}</TableCell>
                       <TableCell style={{ maxWidth: "5em" }} align="center">
                         {row.features}
                       </TableCell>
+                      <TableCell align="center">{row.complexity}</TableCell>
                       <TableCell align="center">{row.platforms}</TableCell>
                       <TableCell align="center">{row.users}</TableCell>
                       <TableCell align="center">{row.total}</TableCell>
