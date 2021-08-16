@@ -141,5 +141,18 @@ export default createTheme({
         borderWidth: 2,
       },
     },
+    MuiTableSortLabel: {
+      root: {
+        "&:hover": {
+          color: arcOrange,
+        },
+        "&.MuiTableSortLabel-active": {
+          color: arcOrange,
+        },
+      },
+      icon: {
+        fill: arcOrange,
+      },
+    },
   },
 });

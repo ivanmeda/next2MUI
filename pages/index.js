@@ -189,6 +189,7 @@ function ProjectManager() {
   const [platforms, setPlatforms] = useState([]);
   const [features, setFeatures] = useState([]);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
 
   const addProject = () => {
     setRows([
@@ -205,7 +206,7 @@ function ProjectManager() {
         true
       ),
     ]);
-    setDialogOpen(false);
+    setDialog(false);
     setName("");
     setDate(new Date());
     setTotal("");
@@ -237,6 +238,7 @@ function ProjectManager() {
     );
 
     setRows(newRows);
+    setPage(0)
   };
 
   return (
@@ -316,18 +318,8 @@ function ProjectManager() {
           </FormGroup>
         </Grid>
         <Grid>
-          <Grid
-            item
-            container
-            justifyContent="flex-end"
-            style={{ marginTop: "5em" }}
-          >
-            <Grid item style={{ marginRight: 75 }}>
-              <FilterList color="secondary" style={{ fontSize: 50 }} />
-            </Grid>
-          </Grid>
-          <Grid item style={{ marginBottom: "15em" }}>
-            <EnhancedTable rows={rows} />
+          <Grid item style={{ marginTop: "5em", marginBottom: "35em" }}>
+            <EnhancedTable rows={rows} page={page} setPage={setPage} />
           </Grid>
         </Grid>
         <Dialog
