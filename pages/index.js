@@ -61,24 +61,24 @@ function ProjectManager() {
       "1500"
     ),
     createData(
-      "ivan",
+      "milan",
       "11/2/19",
       "Website",
       "E-Commerce",
       "N/A",
       "N/A",
       "N/A",
-      "1500"
+      "1900"
     ),
     createData(
-      "ivan",
+      "ana",
       "11/2/19",
       "Website",
       "E-Commerce",
       "N/A",
       "N/A",
       "N/A",
-      "1500"
+      "999"
     ),
   ]);
 
