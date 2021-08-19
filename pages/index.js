@@ -23,7 +23,6 @@ import {
 } from "@material-ui/pickers";
 import { useReducer, useState } from "react";
 import { format } from "date-fns";
-import { FilterList } from "@material-ui/icons";
 import EnhancedTable from "../src/ui/components/EnhancedTable";
 
 const useStyles = makeStyles((theme) => ({
@@ -140,7 +139,6 @@ function ProjectManager() {
   function reducer(state, action) {
     switch (action.type) {
       case "website":
-        console.log(state.website);
         return {
           ...state,
           website: !state.website,
@@ -190,6 +188,7 @@ function ProjectManager() {
   const [features, setFeatures] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
+  console.log(state);
 
   const addProject = () => {
     setRows([
@@ -238,7 +237,7 @@ function ProjectManager() {
     );
 
     setRows(newRows);
-    setPage(0)
+    setPage(0);
   };
 
   return (
@@ -319,7 +318,16 @@ function ProjectManager() {
         </Grid>
         <Grid>
           <Grid item style={{ marginTop: "5em", marginBottom: "35em" }}>
-            <EnhancedTable rows={rows} page={page} setPage={setPage} />
+            <EnhancedTable
+              setRows={setRows}
+              rows={rows}
+              page={page}
+              setPage={setPage}
+              websiteChecked={state.website}
+              iOSChecked={state.ios}
+              androidChecked={state.android}
+              softwareChecked={state.software}
+            />
           </Grid>
         </Grid>
         <Dialog

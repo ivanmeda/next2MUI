@@ -15,11 +15,10 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
-import { Checkbox } from "@material-ui/core";
+import { Button, Checkbox, Snackbar } from "@material-ui/core";
+import { Android, Close as CloseIcon } from "@material-ui/icons";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -142,6 +141,38 @@ const useToolbarStyles = makeStyles((theme) => ({
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
+  const [alert, setAlert] = useState({
+    open: false,
+    color: "#FF3232",
+    message: "Row deleted!",
+  });
+  const [undo, setUndo] = useState([]);
+
+  const onDelete = () => {
+    const newRows = [...props.rows];
+    const selectedRows = newRows.filter((row) =>
+      props.selected.includes(row.name)
+    );
+    selectedRows.map((row) => (row.search = false));
+    props.setRows(newRows);
+    console.log(newRows);
+    props.setSelected([]);
+
+    setUndo(selectedRows);
+    setAlert({
+      ...alert,
+      open: true,
+    });
+  };
+
+  const onUndo = () => {
+    setAlert({ ...alert, open: false });
+    const newRows = [...props.rows];
+    const redo = [...undo];
+    redo.map((row) => (row.search = true));
+    Array.prototype.push.apply(newRows, ...redo);
+    props.setRows(newRows);
+  };
 
   return (
     <Toolbar
@@ -158,11 +189,19 @@ const EnhancedTableToolbar = (props) => {
         >
           {numSelected} selected
         </Typography>
-      ) : null}
+      ) : (
+        <Typography
+          className={classes.title}
+          variant="subtitle1"
+          color="inherit"
+        >
+          {null}
+        </Typography>
+      )}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton aria-label="delete">
+          <IconButton aria-label="delete" onClick={onDelete}>
             <DeleteIcon style={{ fontSize: 30 }} color="primary" />
           </IconButton>
         </Tooltip>
@@ -173,6 +212,33 @@ const EnhancedTableToolbar = (props) => {
           </IconButton>
         </Tooltip>
       )}
+      <Snackbar
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        ContentProps={{
+          style: {
+            backgroundColor: alert.color,
+          },
+        }}
+        open={alert.open}
+        onClose={(e, reason) => {
+          if (reason === "clickaway") {
+            setAlert({ ...alert, open: false });
+            const newRows = [...props.rows];
+            const names = [...undo.map((row) => row.name)];
+            props.setRows(newRows.filter((row) => !names.includes(row.name)));
+            console.log(props.rows);
+          }
+        }}
+        message={alert.message}
+        action={
+          <Button onClick={onUndo} style={{ color: "#fff" }}>
+            Undo
+          </Button>
+        }
+      />
     </Toolbar>
   );
 };
@@ -258,10 +324,47 @@ export default function EnhancedTable(props) {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
+  const switchFilters = () => {
+    const { websiteChecked, iOSChecked, androidChecked, softwareChecked } =
+      props;
+    const websites = props.rows.filter((row) =>
+      websiteChecked ? row.service === "Website" : null
+    );
+    const iOSApps = props.rows.filter((row) =>
+      iOSChecked ? row.platforms.includes("iOS") : null
+    );
+    const android = props.rows.filter((row) =>
+      androidChecked ? row.platforms.includes("Android") : null
+    );
+    const software = props.rows.filter((row) =>
+      softwareChecked ? row.service === "Custom Software" : null
+    );
+    if (!websiteChecked && !iOSChecked && !androidChecked && !softwareChecked) {
+      return props.rows;
+    } else {
+      let newRows = websites.concat(
+        iOSApps.filter((item) => websites.indexOf(item) < 0)
+      );
+      let newRows2 = newRows.concat(
+        android.filter((item) => newRows.indexOf(item) < 0)
+      );
+      let newRows3 = newRows2.concat(
+        software.filter((item) => newRows2.indexOf(item) < 0)
+      );
+      return newRows3;
+    }
+  };
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper} elevation={0}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          setRows={props.setRows}
+          rows={props.rows}
+          numSelected={selected.length}
+          selected={selected}
+          setSelected={setSelected}
+        />
         <TableContainer>
           <Table
             className={classes.table}
@@ -280,7 +383,7 @@ export default function EnhancedTable(props) {
             />
             <TableBody>
               {stableSort(
-                props.rows.filter((row) => row.search),
+                switchFilters().filter((row) => row.search),
                 getComparator(order, orderBy)
               )
                 .slice(
