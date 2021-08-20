@@ -154,5 +154,10 @@ export default createTheme({
         fill: arcOrange,
       },
     },
+    MuiPickersToolbar: {
+      toolbar: {
+        backgroundColor: alpha(arcBlue, 1),
+      },
+    },
   },
 });
